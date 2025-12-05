@@ -39,15 +39,24 @@ class AnthropicClient(BaseLLMClient):
         tool_schemas: list[anthropic.types.ToolUnionParam] | anthropic.NotGiven,
     ) -> anthropic.types.Message:
         """Create a response using Anthropic API. This method will be decorated with retry logic."""
+        extra_params = {}
+        if model_config.temperature is not None:
+            extra_params["temperature"] = model_config.temperature
+        elif model_config.top_p is not None:
+            extra_params["top_p"] = model_config.top_p
+        else:
+            raise Exception("Invalid config, either temperature or top_p must be provided")
+
+        if model_config.top_k is not None:
+            extra_params["top_k"] = model_config.top_k
+
         return self.client.messages.create(
             model=model_config.model,
             messages=self.message_history,
             max_tokens=model_config.max_tokens,
             system=self.system_message,
             tools=tool_schemas,
-            temperature=model_config.temperature,
-            top_p=model_config.top_p,
-            top_k=model_config.top_k,
+            **extra_params,
         )
 
     @override
@@ -77,7 +86,7 @@ class AnthropicClient(BaseLLMClient):
                     tool_schemas.append(
                         TextEditor20250429(
                             name="str_replace_based_edit_tool",
-                            type="text_editor_20250429",
+                            type="text_editor_20250728",
                         )
                     )
                 elif tool.name == "bash":
