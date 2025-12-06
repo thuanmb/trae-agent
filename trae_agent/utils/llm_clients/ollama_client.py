@@ -10,7 +10,7 @@ import uuid
 from typing import override
 
 import openai
-from ollama import chat as ollama_chat  # pyright: ignore[reportUnknownVariableType]
+from ollama import chat as ollama_chat, Message  # pyright: ignore[reportUnknownVariableType]
 from openai.types.responses import (
     FunctionToolParam,
     ResponseFunctionToolCallParam,
@@ -150,7 +150,9 @@ class OllamaClient(BaseLLMClient):
         openai_messages: ResponseInputParam = []
         for msg in messages:
             if msg.tool_result:
-                openai_messages.append(self.parse_tool_call_result(msg.tool_result))
+                print('thuan0', msg)
+                #  openai_messages.append(self.parse_tool_call_result(msg.tool_result))
+                openai_messages.append({'role': 'user', 'content': msg.tool_result.result})
             elif msg.tool_call:
                 openai_messages.append(self.parse_tool_call(msg.tool_call))
             else:
@@ -168,6 +170,7 @@ class OllamaClient(BaseLLMClient):
 
     def parse_tool_call(self, tool_call: ToolCall) -> ResponseFunctionToolCallParam:
         """Parse the tool call from the LLM response."""
+        print('thuan', tool_call)
         return ResponseFunctionToolCallParam(
             call_id=tool_call.call_id,
             name=tool_call.name,
@@ -184,6 +187,7 @@ class OllamaClient(BaseLLMClient):
             result += tool_call_result.error
         result = result.strip()
 
+        print('thuan1', tool_call_result)
         return FunctionCallOutput(
             call_id=tool_call_result.call_id,
             id=tool_call_result.id,

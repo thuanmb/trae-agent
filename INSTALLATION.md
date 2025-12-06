@@ -30,8 +30,31 @@ source .venv/bin/activate
 cp trae_config.yaml.example trae_config.yaml
 ```
 
-7. Testing
+7. Running ollama cloud model:
 
 ```
-trae-cli run "Create a Python script that calculates the Fibonacci sequence"
+ollama run qwen3-coder:480b-cloud
+```
+
+Notes:
+
+-  Authentication
+   For direct access to ollama.com’s API, first create an API key.
+   Then, set the OLLAMA_API_KEY environment variable to your API key.
+
+```
+export OLLAMA_API_KEY=your_api_key
+```
+
+-  Listing models
+   For models available directly via Ollama’s API, models can be listed via:
+
+```
+curl https://ollama.com/api/tags
+```
+
+8. Testing
+
+```
+trae-cli run "Create a Python script that calculates the Fibonacci sequence" --docker-image python:3.12
 ```

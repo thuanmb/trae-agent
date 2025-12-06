@@ -1,0 +1,79 @@
+model_providers:
+  anthropic:
+    provider: anthropic
+    # Key left empty/placeholder. Agent will look for ANTHROPIC_API_KEY
+    api_key: ""
+
+  openai:
+    provider: openai
+    # Key left empty/placeholder. Agent will look for OPENAI_API_KEY
+    api_key: ""
+    # The base URL should typically be the default, but can be overridden if needed
+    base_url: "https://api.deepseek.com"
+
+  ollama:
+    provider: ollama
+    api_key: "ollama"     # no API key needed for local model
+    base_url: "http://localhost:11434/v1"
+
+models:
+    trae_agent_model:
+        # model_provider: openai
+        # model: deepseek-coder-v2-instruct
+        model_provider: anthropic
+        model: claude-sonnet-4-5-20250929
+        max_tokens: 4096
+        temperature: 0.2
+        max_retries: 10
+        parallel_tool_calls: true
+
+    lakeview_model:
+        model_provider: openai
+        model: deepseek-chat
+        # model_provider: anthropic
+        # model: claude-haiku-4-5-20251001
+        max_tokens: 4096
+        temperature: 0.5
+        max_retries: 10
+        parallel_tool_calls: true
+
+    deepseek_model:
+        model_provider: openai
+        model: deepseek-reasoner
+        max_tokens: 4096
+        temperature: 0.1
+        max_retries: 10
+        parallel_tool_calls: true
+
+    qwen3_coder_model:
+        model_provider: ollama
+        # model: qwen3-coder:480b-cloud
+        model: ministral-3:8b-cloud
+        max_tokens: 4096
+        temperature: 0.1
+        top_p: 1
+        top_k: 0
+        max_retries: 10
+        parallel_tool_calls: false
+        supports_tool_calling: false
+
+lakeview:
+    model: lakeview_model
+
+agents:
+  trae_agent:
+    enable_lakeview: true
+    model: qwen3_coder_model
+    max_steps: 200  # max number of agent steps
+    tools:  # tools used with Trae Agent
+      - bash
+      - str_replace_based_edit_tool
+      - json_edit_tool
+      - sequentialthinking
+      - task_done
+      - ckg
+
+llm:
+    provider: ollama
+    function_calling: false
+    reflection: false
